@@ -20,45 +20,6 @@ class Reflector:
             elif char == pair[1]:
                 return pair[0]
 
-class Rotor:
-    def __init__(self, turnover:str, wiring:str) -> None:
-        self.validate_rotor(turnover, wiring)
-        self.turnover:str = turnover
-        self.wiring:str = wiring
-        self.signature:str = wiring
-    def validate_rotor(self, turnover:str, wiring:str) -> None:
-        assert len(turnover)==1, 'Turnover in Rotor class contains too many characters.'
-        assert turnover.isalpha(), 'Turnover in Rotor class needs to be a letter.'
-        assert wiring.isalpha(), 'Wiring in Rotor class contains non-letters.'
-        assert len(set(wiring))==26 and len(wiring)==26, 'Wiring in Rotor class does not contain 26 letters.'
-        assert set(wiring)==ALPHABET, 'Wiring in Rotor class is not uppercase alphabet.'
-    def push(self, char:str) -> str:
-        return self.wiring[ord(char)-ord('A')]
-    def pull(self, char:str) -> str:
-        return [chr(ord('A')+i) for i in range(26) if self.wiring[i]==char][0]
-    def fwd_turn(self) -> None:
-        self.wiring:str = self.wiring[1:] + self.wiring[0]
-    def bkw_turn(self) -> None:
-        self.wiring:str = self.wiring[-1] + self.wiring[:-1]
-    def turn_next(self) -> bool:
-        return self.turnover == self.wiring[0]
-
-class RotorSet:
-    def __init__(self, rotor1:Rotor, rotor2:Rotor, rotor3:Rotor) -> None:
-        self.rotors:list = [rotor1, rotor2, rotor3]
-    def rotate(self) -> None:
-        self.rotors[0].fwd_turn()
-        self.rotors[1].fwd_turn() if self.rotors[0].turn_next() else None
-        self.rotors[2].fwd_turn() if self.rotors[1].turn_next() else None
-    def push(self, char:str) -> str:
-        for rotor in self.rotors:
-            char = rotor.push(char)
-        return char
-    def pull(self, char:str) -> str:
-        for rotor in reversed(self.rotors):
-            char = rotor.pull(char)
-        return char
-
 class Plugboard:
     def __init__(self) -> None:
         self.reset()
@@ -83,6 +44,47 @@ class Plugboard:
     def swap(self, char:str) -> str:
         return self.wiring.get(char, char)
 
+class Rotor:
+    def __init__(self, turnover:str, wiring:str) -> None:
+        self.validate_rotor(turnover, wiring)
+        self.turnover:str = turnover
+        self.wiring:str = ''.join(wiring)
+        self.signature:str = wiring[:] + ''
+    def validate_rotor(self, turnover:str, wiring:str) -> None:
+        assert len(turnover)==1, 'Turnover in Rotor class contains too many characters.'
+        assert turnover.isalpha(), 'Turnover in Rotor class needs to be a letter.'
+        assert wiring.isalpha(), 'Wiring in Rotor class contains non-letters.'
+        assert len(set(wiring))==26 and len(wiring)==26, 'Wiring in Rotor class does not contain 26 letters.'
+        assert set(wiring)==ALPHABET, 'Wiring in Rotor class is not uppercase alphabet.'
+    def push(self, char:str) -> str:
+        #print(char + self.wiring[ord(char)-ord('A')])
+        return self.wiring[ord(char)-ord('A')]
+    def pull(self, char:str) -> str:
+        #print(char + [chr(ord('A')+i) for i in range(26) if self.wiring[i]==char][0])
+        return [chr(ord('A')+i) for i in range(26) if self.wiring[i]==char][0]
+    def fwd_turn(self) -> None:
+        self.wiring:str = self.wiring[1:] + self.wiring[0]
+    def bkw_turn(self) -> None:
+        self.wiring:str = self.wiring[-1] + self.wiring[:-1]
+    def turn_next(self) -> bool:
+        return self.turnover == self.wiring[0]
+
+class RotorSet:
+    def __init__(self, rotor1:Rotor, rotor2:Rotor, rotor3:Rotor) -> None:
+        self.rotors:list = [rotor1, rotor2, rotor3]
+    def rotate(self) -> None:
+        self.rotors[0].fwd_turn()
+        self.rotors[1].fwd_turn() if self.rotors[0].turn_next() else None
+        self.rotors[2].fwd_turn() if self.rotors[1].turn_next() else None
+    def push(self, char:str) -> str:
+        for rotor in self.rotors:
+            char = rotor.push(char)
+        return char
+    def pull(self, char:str) -> str:
+        for rotor in reversed(self.rotors):
+            char = rotor.pull(char)
+        return char
+
 class EnigmaMachine: # Assertion: no lowercase letters.
     def __init__(self, plugboard:Plugboard, rotors:RotorSet, reflector:Reflector) -> None:
         self.plugboard:Plugboard = plugboard
@@ -97,7 +99,6 @@ class EnigmaMachine: # Assertion: no lowercase letters.
         char = self.plugboard.swap(char)
         return char
 
-
 ALPHABET:set = {chr(ord('A')+i) for i in range(26)}
 DEFAULT_REFLECTOR = Reflector({
     ('A','Y'), ('B','R'), ('C','U'),
@@ -105,33 +106,45 @@ DEFAULT_REFLECTOR = Reflector({
     ('G','L'),
     ('I','P'), ('J','X'), ('K','N'),
     ('M','O'), ('T','Z'), ('V','W')
-    }) # UKW-B reflector
+    })
 BOX_OF_ROTORS = [
     Rotor('R','EKMFLGDQVZNTOWYHXUSPAIBRCJ'),
     Rotor('F','AJDKSIRUXBLHWTMCQGZNPYFVOE'),
     Rotor('W','BDFHJLCPRTXVZNYEIWGAKMUSQO'),
     Rotor('K','ESOVPZJAYQUIRHXLNFTGKDCMWB'),
     Rotor('A','VZBRGITYUPSDNHLXAWMJQOFECK'),
-    ] # i, ii, iii, iv, v
-# https://en.wikipedia.org/wiki/Enigma_rotor_details#Rotor_wiring_tables
-# https://en.wikipedia.org/wiki/Enigma_machine#Turnover
+    ]
 DEFAULT_ROTORS = RotorSet(BOX_OF_ROTORS[0], BOX_OF_ROTORS[1], BOX_OF_ROTORS[2])
-# https://realpython.com/python-mutable-vs-immutable-types/#mutability-in-custom-classes
 DEFAULT_PLUGBOARD = Plugboard()
 
+m1 = EnigmaMachine(DEFAULT_PLUGBOARD, DEFAULT_ROTORS, DEFAULT_REFLECTOR)
+s1 = 'HHHHHHHHHHHHHHELLO WORLD... VERY LONG ENCRYPTED ENIGMA MACHINE SECRET MESSAGE HERE!!'
+s2,s3 = '',''
+print(s1)
+for c in s1:
+    if c in ALPHABET:
+        s2 += m1.map(c)
+    else:
+        s2 += c
+print(s2)
 
-'''
-open website
-press button -> backend does logic -> square lights up ... press light (pressing removes prev light)
-lights clear after next button press 
+BOX_OF_ROTORS = [
+    Rotor('R','EKMFLGDQVZNTOWYHXUSPAIBRCJ'),
+    Rotor('F','AJDKSIRUXBLHWTMCQGZNPYFVOE'),
+    Rotor('W','BDFHJLCPRTXVZNYEIWGAKMUSQO'),
+    Rotor('K','ESOVPZJAYQUIRHXLNFTGKDCMWB'),
+    Rotor('A','VZBRGITYUPSDNHLXAWMJQOFECK'),
+    ]
+DEFAULT_ROTORS = RotorSet(BOX_OF_ROTORS[0], BOX_OF_ROTORS[1], BOX_OF_ROTORS[2])
 
-enigma config
-ability to randomise all settings (show user what config is set to)
-choose 3 rotors from 5 (red, green blue yellow, neonpink)
-ability to manually turn the rotor
-ability to choose the plugboard
-'''
+m2 = EnigmaMachine(DEFAULT_PLUGBOARD, DEFAULT_ROTORS, DEFAULT_REFLECTOR)
 
+for c in s2:
+    if c in ALPHABET:
+        s3 += m2.map(c)
+    else:
+        s3 += c
+print(s3)
 
 
 def main():
