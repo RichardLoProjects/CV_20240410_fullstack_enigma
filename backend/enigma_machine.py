@@ -1,6 +1,6 @@
 class Reflector:
     def __init__(self, wiring:set) -> None:
-        self.validate_reflector()
+        self.validate_reflector(wiring)
         self.wiring:set = wiring
     def validate_reflector(self, wiring:set) -> None:
         assert all(isinstance(pair, tuple) and len(pair) == 2 for pair in wiring
