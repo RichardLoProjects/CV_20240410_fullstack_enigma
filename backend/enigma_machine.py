@@ -19,13 +19,15 @@ class Reflector:
                 return pair[1]
             elif char == pair[1]:
                 return pair[0]
+    def copy(self):
+        return Reflector(self.wiring.copy())
 
 class Rotor:
     def __init__(self, turnover:str, wiring:str) -> None:
         self.validate_rotor(turnover, wiring)
         self.turnover:str = turnover
-        self.wiring:str = wiring
-        self.signature:str = wiring
+        self.wiring:str = wiring[:]
+        self.signature:str = wiring[:]
     def validate_rotor(self, turnover:str, wiring:str) -> None:
         assert len(turnover)==1, 'Turnover in Rotor class contains too many characters.'
         assert turnover.isalpha(), 'Turnover in Rotor class needs to be a letter.'
@@ -42,10 +44,12 @@ class Rotor:
         self.wiring:str = self.wiring[-1] + self.wiring[:-1]
     def turn_next(self) -> bool:
         return self.turnover == self.wiring[0]
+    def copy(self):
+        return Rotor(self.turnover[:], self.wiring[:])
 
 class RotorSet:
     def __init__(self, rotor1:Rotor, rotor2:Rotor, rotor3:Rotor) -> None:
-        self.rotors:list = [rotor1, rotor2, rotor3]
+        self.rotors:list = [rotor1.copy(), rotor2.copy(), rotor3.copy()]
     def rotate(self) -> None:
         self.rotors[0].fwd_turn()
         self.rotors[1].fwd_turn() if self.rotors[0].turn_next() else None
@@ -58,6 +62,8 @@ class RotorSet:
         for rotor in reversed(self.rotors):
             char = rotor.pull(char)
         return char
+    def copy(self):
+        return RotorSet(*[rotor.copy() for rotor in self.rotors])
 
 class Plugboard:
     def __init__(self) -> None:
@@ -82,6 +88,11 @@ class Plugboard:
             self.connections.discard(char)
     def swap(self, char:str) -> str:
         return self.wiring.get(char, char)
+    def copy(self):
+        copied_plugboard = Plugboard()
+        copied_plugboard.wiring = self.wiring.copy()
+        copied_plugboard.connections = self.connections.copy()
+        return copied_plugboard
 
 class EnigmaMachine: # Assertion: no lowercase letters.
     def __init__(self, plugboard:Plugboard, rotors:RotorSet, reflector:Reflector) -> None:
@@ -96,6 +107,8 @@ class EnigmaMachine: # Assertion: no lowercase letters.
         char = self.rotors.pull(char) # r3 r2 r1
         char = self.plugboard.swap(char)
         return char
+    def copy(self):
+        return EnigmaMachine(self.plugboard.copy(), self.rotors.copy(), self.reflector.copy())
 
 
 ALPHABET:set = {chr(ord('A')+i) for i in range(26)}
