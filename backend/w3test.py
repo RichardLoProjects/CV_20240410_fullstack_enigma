@@ -142,17 +142,6 @@ for c in s1:
         s2 += c
 print(s2)
 
-'''
-BOX_OF_ROTORS = [
-    Rotor('R','EKMFLGDQVZNTOWYHXUSPAIBRCJ'),
-    Rotor('F','AJDKSIRUXBLHWTMCQGZNPYFVOE'),
-    Rotor('W','BDFHJLCPRTXVZNYEIWGAKMUSQO'),
-    Rotor('K','ESOVPZJAYQUIRHXLNFTGKDCMWB'),
-    Rotor('A','VZBRGITYUPSDNHLXAWMJQOFECK'),
-    ]
-DEFAULT_ROTORS = RotorSet(BOX_OF_ROTORS[0], BOX_OF_ROTORS[1], BOX_OF_ROTORS[2])
-'''
-
 for c in s2:
     if c in ALPHABET:
         s3 += m2.map(c)
