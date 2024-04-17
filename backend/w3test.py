@@ -1,4 +1,9 @@
 class Reflector:
+    ALPHABET:set = {chr(ord('A')+i) for i in range(26)}
+    _wiring:set = {
+        ('A','Y'), ('B','R'), ('C','U'), ('D','H'), ('E','Q'), ('F','S'),
+        ('G','L'), ('I','P'), ('J','X'), ('K','N'), ('M','O'), ('T','Z'), ('V','W')
+        } # UKW-B reflector's wiring
     def __init__(self, wiring:set) -> None:
         self.validate_reflector(wiring)
         self.wiring:set = wiring
@@ -9,20 +14,33 @@ class Reflector:
         used_chars = set()
         for pair in wiring:
             assert (pair[0] not in used_chars) and (pair[1] not in used_chars),\
-                'Conflict wiring in Reflector class.'
+                'Conflicting wiring in Reflector class.'
             used_chars.update({pair[0], pair[1]})
         assert len(used_chars)==26, 'Wiring in Reflector class does not contain 26 letters.'
-        assert used_chars==ALPHABET, 'Wiring in Reflector class is not uppercase alphabet.'
+        assert used_chars==Reflector.ALPHABET, 'Wiring in Reflector class is not uppercase alphabet.'
+    @classmethod
+    def default(cls):
+        return Reflector(cls._wiring.copy())
+    def copy(self):
+        return Reflector(self.wiring.copy())
     def reflect(self, char:str) -> str:
         for pair in self.wiring:
             if char == pair[0]:
                 return pair[1]
             elif char == pair[1]:
                 return pair[0]
-    def copy(self):
-        return Reflector(self.wiring.copy())
 
 class Rotor:
+    ALPHABET:set = {chr(ord('A')+i) for i in range(26)}
+    _DEFAULT:list = [
+        ('R','EKMFLGDQVZNTOWYHXUSPAIBRCJ'),
+        ('F','AJDKSIRUXBLHWTMCQGZNPYFVOE'),
+        ('W','BDFHJLCPRTXVZNYEIWGAKMUSQO'),
+        ('K','ESOVPZJAYQUIRHXLNFTGKDCMWB'),
+        ('A','VZBRGITYUPSDNHLXAWMJQOFECK'),
+        ] # i, ii, iii, iv, v
+    # https://en.wikipedia.org/wiki/Enigma_rotor_details#Rotor_wiring_tables
+    # https://en.wikipedia.org/wiki/Enigma_machine#Turnover
     def __init__(self, turnover:str, wiring:str) -> None:
         self.validate_rotor(turnover, wiring)
         self.turnover:str = turnover
@@ -33,7 +51,12 @@ class Rotor:
         assert turnover.isalpha(), 'Turnover in Rotor class needs to be a letter.'
         assert wiring.isalpha(), 'Wiring in Rotor class contains non-letters.'
         assert len(set(wiring))==26 and len(wiring)==26, 'Wiring in Rotor class does not contain 26 letters.'
-        assert set(wiring)==ALPHABET, 'Wiring in Rotor class is not uppercase alphabet.'
+        assert set(wiring)==Rotor.ALPHABET, 'Wiring in Rotor class is not uppercase alphabet.'
+    @classmethod
+    def default(cls, rotor_id:int):
+        return Rotor(cls._DEFAULT[:][rotor_id][0], cls._DEFAULT[:][rotor_id][1]).copy()
+    def copy(self):
+        return Rotor(self.turnover[:], self.wiring[:])
     def push(self, char:str) -> str:
         return self.wiring[ord(char)-ord('A')]
     def pull(self, char:str) -> str:
@@ -44,10 +67,9 @@ class Rotor:
         self.wiring:str = self.wiring[-1] + self.wiring[:-1]
     def turn_next(self) -> bool:
         return self.turnover == self.wiring[0]
-    def copy(self):
-        return Rotor(self.turnover[:], self.wiring[:])
 
 class RotorSet:
+    ALPHABET:set = {chr(ord('A')+i) for i in range(26)}
     def __init__(self, rotor1:Rotor, rotor2:Rotor, rotor3:Rotor) -> None:
         self.rotors:list = [rotor1.copy(), rotor2.copy(), rotor3.copy()]
     def rotate(self) -> None:
@@ -64,8 +86,12 @@ class RotorSet:
         return char
     def copy(self):
         return RotorSet(*[rotor.copy() for rotor in self.rotors])
+    @classmethod
+    def default(cls):
+        return RotorSet(Rotor.default(0), Rotor.default(1), Rotor.default(2))
 
 class Plugboard:
+    ALPHABET:set = {chr(ord('A')+i) for i in range(26)}
     def __init__(self) -> None:
         self.reset()
     def reset(self) -> None:
@@ -93,13 +119,20 @@ class Plugboard:
         copied_plugboard.wiring = self.wiring.copy()
         copied_plugboard.connections = self.connections.copy()
         return copied_plugboard
+    @classmethod
+    def default(cls):
+        return Plugboard().copy()
 
-class EnigmaMachine: # Assertion: no lowercase letters.
+class EnigmaMachine:
+    ALPHABET:set = {chr(ord('A')+i) for i in range(26)}
     def __init__(self, plugboard:Plugboard, rotors:RotorSet, reflector:Reflector) -> None:
         self.plugboard:Plugboard = plugboard
         self.rotors:RotorSet = rotors
         self.reflector:Reflector = reflector
     def map(self, char:str) -> str:
+        assert not (ord('a')<=ord(char)<=ord('z')), 'This enigma machine does not handle lowercase letters.'
+        return self._map(char) if ord('A') <= ord(char) <= ord('Z') else char
+    def _map(self, char:str) -> str:
         self.rotors.rotate()
         char = self.plugboard.swap(char)
         char = self.rotors.push(char) # r1 r2 r3
@@ -108,50 +141,30 @@ class EnigmaMachine: # Assertion: no lowercase letters.
         char = self.plugboard.swap(char)
         return char
     def copy(self):
+        # https://realpython.com/python-mutable-vs-immutable-types/#mutability-in-custom-classes
         return EnigmaMachine(self.plugboard.copy(), self.rotors.copy(), self.reflector.copy())
-
-ALPHABET:set = {chr(ord('A')+i) for i in range(26)}
-DEFAULT_REFLECTOR = Reflector({
-    ('A','Y'), ('B','R'), ('C','U'),
-    ('D','H'), ('E','Q'), ('F','S'),
-    ('G','L'),
-    ('I','P'), ('J','X'), ('K','N'),
-    ('M','O'), ('T','Z'), ('V','W')
-    })
-BOX_OF_ROTORS = [
-    Rotor('R','EKMFLGDQVZNTOWYHXUSPAIBRCJ'),
-    Rotor('F','AJDKSIRUXBLHWTMCQGZNPYFVOE'),
-    Rotor('W','BDFHJLCPRTXVZNYEIWGAKMUSQO'),
-    Rotor('K','ESOVPZJAYQUIRHXLNFTGKDCMWB'),
-    Rotor('A','VZBRGITYUPSDNHLXAWMJQOFECK'),
-    ]
-DEFAULT_ROTORS = RotorSet(BOX_OF_ROTORS[0], BOX_OF_ROTORS[1], BOX_OF_ROTORS[2])
-DEFAULT_PLUGBOARD = Plugboard()
-DEFAULT_ENIGMA = EnigmaMachine(DEFAULT_PLUGBOARD, DEFAULT_ROTORS, DEFAULT_REFLECTOR)
-
-m1 = DEFAULT_ENIGMA.copy()
-m2 = DEFAULT_ENIGMA.copy()
-
-s1 = 'HHHHHHHHHHHHHHELLO WORLD... VERY LONG ENCRYPTED ENIGMA MACHINE SECRET MESSAGE HERE!!'
-s2,s3 = '',''
-print(s1)
-for c in s1:
-    if c in ALPHABET:
-        s2 += m1.map(c)
-    else:
-        s2 += c
-print(s2)
-
-for c in s2:
-    if c in ALPHABET:
-        s3 += m2.map(c)
-    else:
-        s3 += c
-print(s3)
+    @classmethod
+    def default(cls):
+        return EnigmaMachine(Plugboard.default(), RotorSet.default(), Reflector.default()).copy()
 
 
 def main():
-    pass
+    m1 = EnigmaMachine.default()
+    m2 = EnigmaMachine.default()
+    s1 = 'HELLO WORLD... VERY LONG ENCRYPTED ENIGMA MACHINE SECRET MESSAGE!!'
+    s2,s3,s5 = '','',''
+    s4 = 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
+    print(s1)
+    for c in s1:
+        s2 += m1.map(c)
+    print(s2)
+    for c in s2:
+        s3 += m2.map(c)
+    print(s3)
+    print(s4)
+    for c in s4:
+        s5 += m1.map(c)
+    print(s5)
 
 if __name__ == '__main__':
     main()
