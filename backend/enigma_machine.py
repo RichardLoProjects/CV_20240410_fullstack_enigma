@@ -163,7 +163,29 @@ ability to choose the plugboard
 
 
 def main():
-    pass
+    ## TESTING CODE
+    ## The main function just tests the classes defined above.
+    ## make 2 enigma machine instances
+    ## define some strings
+    ## get s2 by encrypting s1
+    ## get s3 by decrypting s2 (assert s1==s3)
+    ## get s5 by encrypting s4 (showcase same char maps to diff letters)
+    m1 = EnigmaMachine.default()
+    m2 = EnigmaMachine.default()
+    s1 = 'HELLO WORLD... VERY LONG ENCRYPTED ENIGMA MACHINE SECRET MESSAGE!!'
+    s2,s3,s5 = '','',''
+    s4 = 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
+    print(s1)
+    for c in s1:
+        s2 += m1.map(c)
+    print(s2)
+    for c in s2:
+        s3 += m2.map(c)
+    print(s3)
+    print(s4)
+    for c in s4:
+        s5 += m1.map(c)
+    print(s5)
 
 if __name__ == '__main__':
     main()
