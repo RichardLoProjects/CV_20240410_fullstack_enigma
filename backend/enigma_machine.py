@@ -1,3 +1,17 @@
+'''
+press button -> backend does logic -> square lights up ... press light (pressing removes prev light)
+lights clear after next button press 
+
+enigma config = rotors (5x4x3) x rotor positions (26**3) x plugboard (lots)
+
+rotor colours (red, green blue yellow, neonpink)
+ability to manually turn the rotor
+ability to choose the plugboard
+
+ability to randomise all settings (show user what config is set to)
+'''
+
+
 class Reflector:
     ALPHABET:set = {chr(ord('A')+i) for i in range(26)}
     _wiring:set = {
@@ -148,23 +162,9 @@ class EnigmaMachine:
         return EnigmaMachine(Plugboard.default(), RotorSet.default(), Reflector.default()).copy()
 
 
-'''
-open website
-press button -> backend does logic -> square lights up ... press light (pressing removes prev light)
-lights clear after next button press 
-
-enigma config
-ability to randomise all settings (show user what config is set to)
-choose 3 rotors from 5 (red, green blue yellow, neonpink)
-ability to manually turn the rotor
-ability to choose the plugboard
-'''
-
-
-
 def main():
     ## TESTING CODE
-    ## The main function just tests the classes defined above.
+    ## The main function just tests the 5 classes defined above.
     ## make 2 enigma machine instances
     ## define some strings
     ## get s2 by encrypting s1
