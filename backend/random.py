@@ -3,23 +3,27 @@ from enigma_machine import *
 
 def randomised_enigma() -> EnigmaMachine:
     # enigma config = rotors (5x4x3) x rotor positions (26**3) x plugboard (lots)
-    # Step 1: fetch new deep copy (we don't want to mutate)
-    enigma = EnigmaMachine.default()
-    # Step 2: generate rotors
+    # Step 1: generate rotors
     rotor_indices = [0,1,2,3,4]
     random.shuffle(rotor_indices)
     rotor_indices.pop(0)
     rotor_indices.pop(0)
-    rotors = RotorSet(
+    rotor_list:list = [
         Rotor.default(rotor_indices[0]),
         Rotor.default(rotor_indices[1]),
         Rotor.default(rotor_indices[2])
-        )
-    # Step 3: turn rotors
-    rotor_positions = [random.randint(0,25), random.randint(0,25), random.randint(0,25)]
+        ]
+    # Step 2: turn rotors
+    for i in range(3):
+        for _ in range(random.randint(0,25)+1):
+            rotor_list[i].fwd_turn()
+    # Step 3: place rotors in rotor set
+    rotors = RotorSet(*rotor_list)
     # Step 4: add plugboard connections
-    num_pairs = random.randint(0,13)
-    return enigma
+    available_char:set = {chr(ord('A')+i) for i in range(26)}
+    for _ in range(random.randint(0,13)+1):
+        pass
+    return EnigmaMachine(Plugboard.default(), rotors, Reflector.default()).copy()
 
 
 
