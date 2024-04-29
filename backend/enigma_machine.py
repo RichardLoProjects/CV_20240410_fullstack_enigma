@@ -66,11 +66,6 @@ class Rotor:
         assert wiring.isalpha(), 'Wiring in Rotor class contains non-letters.'
         assert len(set(wiring))==26 and len(wiring)==26, 'Wiring in Rotor class does not contain 26 letters.'
         assert set(wiring)==Rotor.ALPHABET, 'Wiring in Rotor class is not uppercase alphabet.'
-    @classmethod
-    def default(cls, rotor_id:int):
-        return Rotor(cls._DEFAULT[:][rotor_id][0], cls._DEFAULT[:][rotor_id][1]).copy()
-    def copy(self):
-        return Rotor(self.turnover[:], self.wiring[:])
     def push(self, char:str) -> str:
         return self.wiring[ord(char)-ord('A')]
     def pull(self, char:str) -> str:
@@ -81,6 +76,11 @@ class Rotor:
         self.wiring:str = self.wiring[-1] + self.wiring[:-1]
     def turn_next(self) -> bool:
         return self.turnover == self.wiring[0]
+    def copy(self):
+        return Rotor(self.turnover[:], self.wiring[:])
+    @classmethod
+    def default(cls, rotor_id:int):
+        return Rotor(cls._DEFAULT[:][rotor_id][0], cls._DEFAULT[:][rotor_id][1]).copy()
 
 class RotorSet:
     ALPHABET:set = {chr(ord('A')+i) for i in range(26)}
