@@ -8,8 +8,6 @@ ability to manually turn the rotor
 ability to choose the plugboard
 ability to randomise all settings (show user what config is set to)
 
-# https://realpython.com/python-mutable-vs-immutable-types/#mutability-in-custom-classes
-
 todo
 ability to manually customise: rotors, rotor pos, plugboard
 ability to read the current enigma settings
@@ -20,6 +18,7 @@ class EnigmaUtils:
     ALPHABET_LOWER = frozenset({chr(ord('a')+i) for i in range(26)})
 
 class FrozenDict(dict):
+    # https://realpython.com/python-mutable-vs-immutable-types/#mutability-in-custom-classes
     def __setitem__(self, key, value) -> None:
         raise TypeError("FrozenDict does not support item assignment.")
     def __delitem__(self, key) -> None:
@@ -34,9 +33,46 @@ class FrozenDict(dict):
         raise TypeError("FrozenDict does not support setdefault.")
     def update(self, *args, **kwargs) -> None:
         raise TypeError("FrozenDict does not support update.")
+    def __repr__(self) -> str:
+        return f"FrozenDictionary({super().__repr__()})"
 
 class Rotor:
-    pass
+    NUMBER = FrozenDict({'R':1, 'F':2, 'W':3, 'K':4, 'A':5})
+    BOX = FrozenDict({
+        1:tuple('R'+'EKMFLGDQVZNTOWYHXUSPAIBRCJ'),
+        2:tuple('F'+'AJDKSIRUXBLHWTMCQGZNPYFVOE'),
+        3:tuple('W'+'BDFHJLCPRTXVZNYEIWGAKMUSQO'),
+        4:tuple('K'+'ESOVPZJAYQUIRHXLNFTGKDCMWB'),
+        5:tuple('A'+'VZBRGITYUPSDNHLXAWMJQOFECK'),
+    })
+    # https://en.wikipedia.org/wiki/Enigma_rotor_details#Rotor_wiring_tables
+    # https://en.wikipedia.org/wiki/Enigma_machine#Turnover
+    def __init__(self, rotor_id:int) -> None:
+        self._ID:int = rotor_id
+        self._NOTCH:str = Rotor.BOX[rotor_id][0]
+        self._wiring = list(Rotor.BOX[rotor_id][i] for i in range(1,27))
+        self._position:int = 0
+    def fwd_map(self, char:str) -> str:
+        return self._wiring[ord(char)-ord('A')]
+    def bkd_map(self, char:str) -> str:
+        return [chr(ord('A')+i) for i in range(26) if self._wiring[i]==char][0]
+    def fwd_turn(self) -> None:
+        self._wiring:list = self._wiring[1:] + [self._wiring[0]]
+        self._position = (self._position + 1) % 26
+    def bkw_turn(self) -> None:
+        self._wiring:list = [self._wiring[-1]] + self._wiring[:-1]
+        self._position = (self._position - 1) % 26
+    def set_position(self, position:int) -> None:
+        for _ in range(position):
+            self.fwd_turn()
+    def turnover(self) -> bool:
+        return self._NOTCH == self._wiring[0]
+    def read_config(self) -> tuple:
+        return tuple(self._ID, self._position)
+    def copy(self):
+        copied_rotor = Rotor(self._ID)
+        copied_rotor.set_position(self._position)
+        return copied_rotor
 
 class Plugboard:
     def __init__(self) -> None:
@@ -85,7 +121,7 @@ class EnigmaMachine:
     _REFLECT = FrozenDict({
         'A':'Y','B':'R','C':'U','D':'H','E':'Q','F':'S','G':'L','I':'P','J':'X','K':'N','M':'O','T':'Z','V':'W',
         'Y':'A','R':'B','U':'C','H':'D','Q':'E','S':'F','L':'G','P':'I','X':'J','N':'K','O':'M','Z':'T','W':'V'
-        }) # UKW-B reflector
+    }) # UKW-B reflector
     def __init__(self, slow_rotor:Rotor, mid_rotor:Rotor, fast_rotor:Rotor, plugboard:Plugboard) -> None:
         self._plugboard = plugboard
         self._rotor1 = fast_rotor
@@ -97,12 +133,13 @@ class EnigmaMachine:
     def _map(self, char:str) -> str: # rotate pb r1 r2 r3 refl r3 r2 r1 pb
         self._rotate()
         char = self._plugboard.swap(char)
+        char = EnigmaMachine._REFLECT[char]
         char = self._plugboard.swap(char)
         return char
     def _rotate(self) -> None:
         pass
-    def read_config(self) -> dict:
-        pass
+    def read_config(self) -> tuple:
+        return (self._plugboard.read_config(), )
     def copy(self):
         pass
     @classmethod
