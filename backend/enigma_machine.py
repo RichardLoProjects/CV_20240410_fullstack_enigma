@@ -8,13 +8,111 @@ ability to manually turn the rotor
 ability to choose the plugboard
 ability to randomise all settings (show user what config is set to)
 
+# https://realpython.com/python-mutable-vs-immutable-types/#mutability-in-custom-classes
 
 todo
 ability to manually customise: rotors, rotor pos, plugboard
 ability to read the current enigma settings
 '''
 
+class EnigmaUtils:
+    ALPHABET_UPPER = frozenset({chr(ord('A')+i) for i in range(26)})
+    ALPHABET_LOWER = frozenset({chr(ord('a')+i) for i in range(26)})
 
+class FrozenDict(dict):
+    def __setitem__(self, key, value) -> None:
+        raise TypeError("FrozenDict does not support item assignment.")
+    def __delitem__(self, key) -> None:
+        raise TypeError("FrozenDict does not support item deletion.")
+    def clear(self) -> None:
+        raise TypeError("FrozenDict does not support clear.")
+    def pop(self, key, default=None) -> None:
+        raise TypeError("FrozenDict does not support pop.")
+    def popitem(self) -> None:
+        raise TypeError("FrozenDict does not support popitem.")
+    def setdefault(self, key, default=None) -> None:
+        raise TypeError("FrozenDict does not support setdefault.")
+    def update(self, *args, **kwargs) -> None:
+        raise TypeError("FrozenDict does not support update.")
+
+class Rotor:
+    pass
+
+class Plugboard:
+    def __init__(self) -> None:
+        self.reset()
+    def reset(self) -> None:
+        self._wiring = dict()
+        self._connections = set()
+    def attach_connection(self, char1:str, char2:str) -> None:
+        assert all([char in EnigmaUtils.ALPHABET_UPPER for char in [char1, char2]]),\
+            'Plugboard does not handle non-uppercase characters.'
+        self.detach_connection(char1)
+        self.detach_connection(char2)
+        self._connections.update({char1, char2})
+        self._wiring[char1] = char2
+        self._wiring[char2] = char1
+    def detach_connection(self, char:str) -> None:
+        if char in self._connections:
+            partner = self._wiring[char]
+            del self._wiring[partner]
+            self._connections.discard(partner)
+            del self._wiring[char]
+            self._connections.discard(char)
+    def swap(self, char:str) -> str:
+        return self._wiring.get(char, char)
+    def read_config(self) -> dict:
+        return self._wiring.copy()
+    def copy(self):
+        copied_plugboard = Plugboard()
+        copied_plugboard._wiring = self._wiring.copy()
+        copied_plugboard._connections = self._connections.copy()
+        return copied_plugboard
+    @classmethod
+    def default(cls):
+        return Plugboard()
+
+class EnigmaMachine:
+    '''
+    <https://youtu.be/G2_Q9FoD-oQ>
+    Possible configurations for enigma...
+        60 rotors (choose 3 from box of 5): 60 == 5x4x3
+        17,576 rotor positions: 17576 == 26**3
+        150,738,274,937,250 plugboard (assume 10 pairs): 150738274937250 == 26!/((6!)(10!)(2**10))
+    == 158,962,555,217,826,360,000
+    ie... enigma config = rotors (5x4x3) x rotor positions (26**3) x plugboard (lots)
+    '''
+    _REFLECT = FrozenDict({
+        'A':'Y','B':'R','C':'U','D':'H','E':'Q','F':'S','G':'L','I':'P','J':'X','K':'N','M':'O','T':'Z','V':'W',
+        'Y':'A','R':'B','U':'C','H':'D','Q':'E','S':'F','L':'G','P':'I','X':'J','N':'K','O':'M','Z':'T','W':'V'
+        }) # UKW-B reflector
+    def __init__(self, slow_rotor:Rotor, mid_rotor:Rotor, fast_rotor:Rotor, plugboard:Plugboard) -> None:
+        self._plugboard = plugboard
+        self._rotor1 = fast_rotor
+        self._rotor2 = mid_rotor
+        self._rotor3 = slow_rotor
+    def map(self, char:str) -> str:
+        assert char not in EnigmaUtils.ALPHABET_LOWER, 'Enigma machine does not handle lowercase letters.'
+        return self._map(char) if char in EnigmaUtils.ALPHABET_UPPER else char
+    def _map(self, char:str) -> str: # rotate pb r1 r2 r3 refl r3 r2 r1 pb
+        self._rotate()
+        char = self._plugboard.swap(char)
+        char = self._plugboard.swap(char)
+        return char
+    def _rotate(self) -> None:
+        pass
+    def read_config(self) -> dict:
+        pass
+    def copy(self):
+        pass
+    @classmethod
+    def default(cls):
+        return EnigmaMachine()
+
+
+
+
+'''
 class Reflector:
     ALPHABET:set = {chr(ord('A')+i) for i in range(26)}
     _wiring = frozenset({
@@ -64,7 +162,7 @@ class Rotor:
         self.validate_rotor(turnover, wiring)
         self.turnover:str = turnover
         self.wiring:str = wiring[:]
-        self.signature:str = wiring[:]
+        self.signature = tuple(wiring[:])
     def validate_rotor(self, turnover:str, wiring:str) -> None:
         assert len(turnover)==1, 'Turnover in Rotor class contains too many characters.'
         assert turnover.isalpha(), 'Turnover in Rotor class needs to be a letter.'
@@ -83,9 +181,10 @@ class Rotor:
         return self.turnover == self.wiring[0]
     def read_config(self) -> tuple:
         position:int = 0
-        copy_signature:str = self.signature[:]
+        copy_signature:str = ''.join(self.signature)
         print(copy_signature)
         print(self.wiring)
+        print(self.signature)
         while copy_signature != self.wiring:
             position += 1
             copy_signature = copy_signature[1:] + copy_signature[0]
@@ -155,15 +254,6 @@ class Plugboard:
 
 class EnigmaMachine:
     ALPHABET:set = {chr(ord('A')+i) for i in range(26)}
-    '''
-    <https://youtu.be/G2_Q9FoD-oQ>
-    Possible configurations for enigma...
-        60 rotors (choose 3 from box of 5): 60 == 5x4x3
-        17,576 rotor positions: 17576 == 26**3
-        150,738,274,937,250 plugboard (assume 10 pairs): 150738274937250 == 26!/((6!)(10!)(2**10))
-    == 158,962,555,217,826,360,000
-    ie... enigma config = rotors (5x4x3) x rotor positions (26**3) x plugboard (lots)
-    '''
     def __init__(self, plugboard:Plugboard, rotors:RotorSet, reflector:Reflector) -> None:
         self.plugboard:Plugboard = plugboard
         self.rotors:RotorSet = rotors
@@ -191,7 +281,8 @@ class EnigmaMachine:
     @classmethod
     def default(cls):
         return EnigmaMachine(Plugboard.default(), RotorSet.default(), Reflector.default()).copy()
-
+'''
+        
 
 def main():
     ## TESTING CODE
