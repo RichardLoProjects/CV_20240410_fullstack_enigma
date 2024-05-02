@@ -3,14 +3,24 @@ press button -> backend does logic -> square lights up ... press light (pressing
 lights clear after next button press or 10 seconds pass
 
 rotor colours (red, green blue yellow, neonpink)
-
-ability to manually turn the rotor
-ability to choose the plugboard
 ability to randomise all settings (show user what config is set to)
 
 todo
-ability to manually customise: rotors, rotor pos, plugboard
-ability to read the current enigma settings
+ability to manually customise: rotors, rotor pos, plugboard (set-data methods in enigma class)
+
+result:
+open python
+open js
+
+there is a enigma machine
+can choose rotor based on dropdown box (omit rotors already used)
+can turn rotor (up button, down button)
+can construct plugboard 1 pair at a time (26 dropdown boxes- omit char already used - incl option to remove)
+show keyboard (keyboard buttons light up)
+user input (click or type -- only accept alphabet A-Z)
+
+change setting (frontend graphic done internally) frontend -> change enigma backend -> (does not output to front)
+input char frontend -> enigma backend -> output char to lamp frontend
 '''
 
 class EnigmaUtils:
