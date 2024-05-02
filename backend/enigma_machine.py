@@ -12,7 +12,7 @@ result:
 open python
 open js
 
-there is a enigma machine
+there is a enigma machine (plugboard buttons, keyboard, rotors displaying position, rotor buttons)
 can choose rotor based on dropdown box (omit rotors already used)
 can turn rotor (up button, down button)
 can construct plugboard 1 pair at a time (26 dropdown boxes- omit char already used - incl option to remove)
