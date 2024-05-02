@@ -11,6 +11,7 @@ ability to manually customise: rotors, rotor pos, plugboard (set-data methods in
 result:
 open python
 open js
+deploy to streamlit when done
 
 there is a enigma machine (plugboard buttons, keyboard, rotors displaying position, rotor buttons)
 can choose rotor based on dropdown box (omit rotors already used)
