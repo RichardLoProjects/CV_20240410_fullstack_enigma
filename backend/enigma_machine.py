@@ -27,6 +27,7 @@ class EnigmaUtils:
     ALPHABET_UPPER:frozenset = frozenset({chr(ord('A')+i) for i in range(26)})
     ALPHABET_LOWER:frozenset = frozenset({chr(ord('a')+i) for i in range(26)})
     # https://realpython.com/python-mutable-vs-immutable-types/#mutability-in-custom-classes
+    # list, set, dict, customUserClasses are mutable
     #
     # https://en.wikipedia.org/wiki/Enigma_rotor_details#Rotor_wiring_tables
     # https://en.wikipedia.org/wiki/Enigma_machine#Turnover
