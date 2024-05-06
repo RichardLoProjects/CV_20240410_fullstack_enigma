@@ -68,22 +68,22 @@ class Rotor:
         4:tuple('K'+'ESOVPZJAYQUIRHXLNFTGKDCMWB'),
         5:tuple('A'+'VZBRGITYUPSDNHLXAWMJQOFECK'),
     })
-    def __init__(self, rotor_id:int) -> None:
+    def __init__(self, rotor_id:int, position:int=0) -> None:
         self._ID:int = rotor_id
         self._NOTCH:str = Rotor.BOX[rotor_id][0]
-        self._wiring:list[str] = [Rotor.BOX[rotor_id][i] for i in range(1,27)]
-        self._position:int = 0
+        self._WIRING:tuple[str] = tuple(Rotor.BOX[rotor_id][1:])
+        self._position:int = position
     def forward(self, char:str) -> str:
-        return self._wiring[ord(char)-ord('A')]
+        index = (ord(char)-ord('A') + self._position)%26
+        return self._WIRING[index]
     def bakward(self, char:str) -> str:
-        return [chr(ord('A')+i) for i in range(26) if self._wiring[i]==char][0]
+        index = (self._WIRING.index(char) - self._position)%26
+        return chr(ord('A') + index)
     def at_notch(self) -> bool:
-        return self._NOTCH == self._wiring[0]
+        return self._position == ord(self._NOTCH)-ord('A')
     def rotate(self) -> None:
-        self._wiring = self._wiring[1:] + [self._wiring[0]]
         self._position = (self._position+1)%26
     def reverse(self) -> None:
-        self._wiring = [self._wiring[-1]] + self._wiring[:-1]
         self._position = (self._position-1)%26
     def set_position(self, position:int) -> None:
         while self._position != (position%26):
@@ -91,16 +91,14 @@ class Rotor:
     def get_settings(self) -> tuple:
         return (self._ID, self._position)
     def copy(self):
-        copied_rotor:Rotor = Rotor(self._ID)
-        copied_rotor.set_position(self._position)
-        return copied_rotor
+        return Rotor(self._ID, self._position)
 
 class Plugboard:
     def __init__(self) -> None:
-        self.reset()
-    def reset(self) -> None:
         self._wiring:dict = dict()
         self._connections:set = set()
+    def swap(self, char:str) -> str:
+        return self._wiring.get(char, char)
     def attach_pair(self, char1:str, char2:str) -> None:
         assert all([char in EnigmaUtils.ALPHABET_UPPER for char in [char1, char2]]),\
             'Plugboard does not handle non-uppercase characters.'
@@ -116,8 +114,9 @@ class Plugboard:
             self._connections.discard(partner)
             del self._wiring[char]
             self._connections.discard(char)
-    def swap(self, char:str) -> str:
-        return self._wiring.get(char, char)
+    def reset(self) -> None:
+        for c in self._connections.copy():
+            self.detach_pair(c)
     def get_settings(self) -> dict:
         return self._wiring.copy()
     def copy(self):
@@ -133,7 +132,7 @@ class EnigmaMachine:
     }) # UKW-B reflector
     def __init__(self, slow_rotor:Rotor, mid_rotor:Rotor, fast_rotor:Rotor, plugboard:Plugboard) -> None:
         self._plugboard:Plugboard = plugboard
-        self._rotors:dict[str,Rotor] = {'slow':slow_rotor, 'mid':mid_rotor, 'fast':fast_rotor}
+        self._rotors:dict[str,Rotor] = {'slow':slow_rotor, 'midl':mid_rotor, 'fast':fast_rotor}
     def map(self, char:str) -> str:
         assert char not in EnigmaUtils.ALPHABET_LOWER, 'Enigma machine does not handle lowercase letters.'
         return self._map(char) if char in EnigmaUtils.ALPHABET_UPPER else char
@@ -141,29 +140,29 @@ class EnigmaMachine:
         self._rotate()
         char = self._plugboard.swap(char)
         char = self._rotors['fast'].forward(char)
-        char = self._rotors['mid'].forward(char)
+        char = self._rotors['midl'].forward(char)
         char = self._rotors['slow'].forward(char)
         char = EnigmaMachine._REFLECT[char]
         char = self._rotors['slow'].bakward(char)
-        char = self._rotors['mid'].bakward(char)
+        char = self._rotors['midl'].bakward(char)
         char = self._rotors['fast'].bakward(char)
         char = self._plugboard.swap(char)
         return char
     def _rotate(self) -> None:
         self._rotors['fast'].rotate()
-        self._rotors['mid'].rotate() if self._rotors['fast'].at_notch() else None
-        self._rotors['slow'].rotate() if self._rotors['mid'].at_notch() else None
+        self._rotors['midl'].rotate() if self._rotors['fast'].at_notch() else None
+        self._rotors['slow'].rotate() if self._rotors['midl'].at_notch() else None
     def get_settings(self) -> tuple:
         return (
             self._rotors['slow'].get_settings(),
-            self._rotors['mid'].get_settings(),
+            self._rotors['midl'].get_settings(),
             self._rotors['fast'].get_settings(),
             self._plugboard.get_settings()
         )
     def copy(self):
         return EnigmaMachine(
             self._rotors['slow'].copy(),
-            self._rotors['mid'].copy(),
+            self._rotors['midl'].copy(),
             self._rotors['fast'].copy(),
             self._plugboard.copy()
         )
