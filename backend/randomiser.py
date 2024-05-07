@@ -1,19 +1,19 @@
-import random
+from random import Random
 from enigma_machine import *
 
 def randomised_enigma() -> EnigmaMachine:
     # Step 1a: sample 3 rotors from a box of 5
-    rotor_indices:list[int] = random.sample([1,2,3,4,5],k=3)
+    rotor_indices:list[int] = Random.sample([1,2,3,4,5],k=3)
     rotors:list[Rotor] = [Rotor(rotor_indices[i]) for i in range(3)]
     # Step 1b: rotor positions
     for i in range(3):
-        for _ in range(random.randint(0,26)):
+        for _ in range(Random.randint(0,26)):
             rotors[i].rotate()
     # Step 2: add plugboard connections
     plugboard = Plugboard()
     available_char:set = {chr(ord('A')+i) for i in range(26)}
-    for _ in range(random.randint(0,13)):
-        chars:list = random.sample(list(available_char),k=2)
+    for _ in range(Random.randint(0,13)):
+        chars:list = Random.sample(list(available_char),k=2)
         for c in chars:
             available_char.remove(c)
         plugboard.attach_pair(*chars)
