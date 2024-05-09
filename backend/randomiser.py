@@ -12,7 +12,7 @@ def randomised_enigma() -> EnigmaMachine:
     # Step 2: add plugboard connections
     plugboard = Plugboard()
     available_char:set = {chr(ord('A')+i) for i in range(26)}
-    for _ in range(Random.randint(0,13)):
+    for _ in range(10): #Random.randint(0,13)
         chars:list = Random.sample(list(available_char),k=2)
         for c in chars:
             available_char.remove(c)
