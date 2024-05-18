@@ -107,6 +107,8 @@ class Plugboard:
         self._wiring[char1] = char2
         self._wiring[char2] = char1
     def detach_pair(self, char:str) -> None:
+        assert char in EnigmaUtils.ALPHABET_UPPER,\
+            'Plugboard does not handle non-uppercase characters.'
         if char in self._connections:
             partner = self._wiring[char]
             del self._wiring[partner]
@@ -125,6 +127,7 @@ class Plugboard:
         return copied_plugboard
 
 class EnigmaMachine:
+    ## User methods: add/remove plugboard pair, pick rotor, turn rotor up/down, map
     _REFLECT = FrozenDict({
         'A':'Y','B':'R','C':'U','D':'H','E':'Q','F':'S','G':'L','I':'P','J':'X','K':'N','M':'O','T':'Z','V':'W',
         'Y':'A','R':'B','U':'C','H':'D','Q':'E','S':'F','L':'G','P':'I','X':'J','N':'K','O':'M','Z':'T','W':'V'
@@ -132,6 +135,21 @@ class EnigmaMachine:
     def __init__(self, slow_rotor:Rotor, mid_rotor:Rotor, fast_rotor:Rotor, plugboard:Plugboard) -> None:
         self._plugboard:Plugboard = plugboard
         self._rotors:dict[str,Rotor] = {'slow':slow_rotor, 'midl':mid_rotor, 'fast':fast_rotor}
+    def attach_plugs(self, char1:str, char2:str) -> None:
+        assert all(c in EnigmaUtils.ALPHABET_UPPER for c in [char1, char2]),\
+            'Plugboard does not handle non-uppercase characters.'
+        self._plugboard.attach_pair(char1, char2)
+    def detach_plugs(self, char:str) -> None:
+        assert char in EnigmaUtils.ALPHABET_UPPER,\
+            'Plugboard does not handle non-uppercase characters.'
+        self._plugboard.detach_pair(char)
+    def change_rotor(self, old_rotor_label:str, new_rotor:Rotor) -> None:
+        assert old_rotor_label in {'slow', 'midl', 'fast'}, 'Invalid rotor label.'
+        self._rotors[old_rotor_label] = new_rotor
+    def turn_rotor_fwd(self, rotor_label:str) -> None:
+        self._rotors[rotor_label].rotate()
+    def turn_rotor_bwd(self, rotor_label:str) -> None:
+        self._rotors[rotor_label].reverse()
     def map(self, char:str) -> str:
         assert char not in EnigmaUtils.ALPHABET_LOWER, 'Enigma machine does not handle lowercase letters.'
         return self._map(char) if char in EnigmaUtils.ALPHABET_UPPER else char
@@ -170,7 +188,7 @@ class EnigmaMachine:
         return EnigmaMachine(Rotor(3), Rotor(2), Rotor(1), Plugboard())
 
 
-def main():
+def test():
     ## TESTING CODE
     ## The main function just tests the 5 classes defined above.
     ## make 2 enigma machine instances
@@ -194,6 +212,45 @@ def main():
     for c in s4:
         s5 += m1.map(c)
     print(s5)
+
+def main():
+    enigma_machine = EnigmaMachine.default()
+    action = ''
+    print('To quit, type "quit" when prompted for an action.')
+    while action != 'quit':
+        action = input('\nActions: Add plug (a), Kill plug (k), Change rotor (r), Turn rotor up (u), Turn rotor down (d), Get settings (g), Send message (m) \nInput: ')
+        match action:
+            case 'a': # Add pair to plugboard
+                c1 = input('Char 1: ').upper()
+                c2 = input('Char 2: ').upper()
+                enigma_machine.attach_plugs(c1, c2)
+            case 'k': # Remove pair from plugboard
+                c_ = input('Char: ').upper()
+                enigma_machine.detach_plugs(c_)
+            case 'r': # Change existing rotor for new rotor
+                old_rotor = input('Current rotor (slow, midl, fast): ')
+                new_rotor = int(input('New rotor ID (1-5): '))
+                enigma_machine.change_rotor(old_rotor, Rotor(new_rotor))
+            case 'u': # Turn rotor up
+                rotor_id = input('Current rotor (slow, midl, fast): ')
+                num_turns = int(input('Number of turns: '))
+                for _ in range(num_turns):
+                    enigma_machine.turn_rotor_fwd(rotor_id)
+            case 'd': # Turn rotor down
+                rotor_id = input('Current rotor (slow, midl, fast): ')
+                num_turns = int(input('Number of turns: '))
+                for _ in range(num_turns):
+                    enigma_machine.turn_rotor_bwd(rotor_id)
+            case 'g': # Show enigma settings
+                print(enigma_machine.get_settings())
+            case 'm': # Encrypt/decrypt a message
+                msg = input('Your message: ')
+                encrypted_msg = ''
+                for c in msg:
+                    encrypted_msg += enigma_machine.map(c.upper())
+                print(f'Encrypted message: {encrypted_msg}')
+            case _:
+                pass
 
 if __name__ == '__main__':
     main()
