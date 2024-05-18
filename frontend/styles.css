@@ -1,13 +1,135 @@
 body {
     font-family: Arial, sans-serif;
+    background:linear-gradient(27deg, rgb(10, 10, 10) 0%, rgba(80,80,80,1) 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
 }
 
-#output {
-    margin-bottom: 20px;
+.container {
+    text-align: center;
+    background: rgba(0,0,0,0);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+}
+
+h1, h3{
+    color: rgb(255, 197, 25);
+}
+
+label {
+    color: rgb(255, 197, 25);
 }
 
 button {
-    padding: 10px 20px;
-    font-size: 16px;
+    /* font-size: 20; */
+    font-weight: bold;
+}
+
+select {
+    color: rgb(0, 0, 0);
+    margin-left: 5px;
+}
+option {
+    color: rgb(0, 0, 0);
+}
+
+input {
+    color: rgb(0, 0, 0);
+}
+
+.title_body {
+    display: flex;
+    flex-direction: column;
+}
+
+
+
+.rotors, .keyboard, .plugboard {
+    margin-left: 20px;
+    margin-right: 20px;
+    margin-bottom: 20px;
+}
+
+
+.rotors {
+    display: flex;
+    justify-content: center;
+}
+.rotor {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+.rotorLabel {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+.rotorPos {
+    font-weight: bold;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+.rotor button {
+    color: rgb(0, 0, 0);
+    padding: 5px 10px;
+    height: 30px;
+    width: 30px;
+    margin-left: 5px;
+    margin-right: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
     cursor: pointer;
+}
+.rotor button:hover {
+    background-color: #cccccc;
+}
+
+
+.keyboard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.keyboard .row {
+    display: flex;
+    justify-content: center;
+    margin-left: 5px;
+    margin-right: 5px;
+    margin-bottom: 5px;
+}
+.keyboard button {
+    background-color: #eeeeee;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    color: rgb(0, 0, 0);
+    padding: 10px;
+    margin: 3px;
+    font-size: 14px;
+    height: 30px;
+    width: 30px;
+    cursor: pointer;
+}
+.keyboard button:hover {
+    background-color: #cccccc;
+}
+
+
+.plugboard {
+    display: flex;
+    margin-top: 10px;
+}
+.plug {
+    margin: 0 10px;
+}
+.plug input {
+    width: 10px;
+    text-align: center;
 }
