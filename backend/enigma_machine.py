@@ -118,8 +118,8 @@ class Plugboard:
     def reset(self) -> None:
         for c in self._connections.copy():
             self.detach_pair(c)
-    def get_settings(self) -> dict:
-        return self._wiring.copy()
+    def get_settings(self) -> set:
+        return {(k,v) for k,v in self._wiring.items() if k<v}
     def copy(self):
         copied_plugboard:Plugboard = Plugboard()
         copied_plugboard._wiring = self._wiring.copy()
