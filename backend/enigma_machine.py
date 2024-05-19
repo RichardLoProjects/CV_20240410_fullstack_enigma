@@ -119,7 +119,7 @@ class Plugboard:
         for c in self._connections.copy():
             self.detach_pair(c)
     def get_settings(self) -> set:
-        return {(k,v) for k,v in self._wiring.items() if k<v}
+        return {(k,v) for k,v in self._wiring.items() if (k < v)}
     def copy(self):
         copied_plugboard:Plugboard = Plugboard()
         copied_plugboard._wiring = self._wiring.copy()
@@ -216,10 +216,24 @@ def test():
 def main():
     enigma_machine = EnigmaMachine.default()
     action = ''
+    action_prompt = (
+        '\n'
+        'Actions: '
+        'Add plug (a), '
+        'Kill plug (k), '
+        'Change rotor (r), '
+        'Turn rotor up (u), '
+        'Turn rotor down (d), '
+        'Set rotor position (s)'
+        'Get settings (g), '
+        'Send message (m)'
+        '\n'
+        'Desired user action: '
+    )
     print('To quit, type "quit" when prompted for an action.')
     while action != 'quit':
-        action = input('\nActions: Add plug (a), Kill plug (k), Change rotor (r), Turn rotor up (u), Turn rotor down (d), Get settings (g), Send message (m) \nInput: ')
-        match action:
+        action = input(action_prompt)
+        match action: # a, k, r, u, d, s, g, m, quit
             case 'a': # Add pair to plugboard
                 c1 = input('Char 1: ').upper()
                 c2 = input('Char 2: ').upper()
@@ -241,6 +255,12 @@ def main():
                 num_turns = int(input('Number of turns: '))
                 for _ in range(num_turns):
                     enigma_machine.turn_rotor_bwd(rotor_id)
+            case 's': # Set rotor position
+                rotor_id = input('Current rotor (slow, midl, fast): ')
+                rotor_pos = int(input('Set rotor position to '))
+                id_to_index = {'slow':0, 'midl':1, 'fast':2}
+                while rotor_pos != enigma_machine.get_settings()[id_to_index[rotor_id]][1]:
+                    enigma_machine.turn_rotor_fwd(rotor_id)
             case 'g': # Show enigma settings
                 print(enigma_machine.get_settings())
             case 'm': # Encrypt/decrypt a message
