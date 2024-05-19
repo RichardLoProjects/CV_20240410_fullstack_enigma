@@ -224,16 +224,17 @@ def main():
         'Change rotor (r), '
         'Turn rotor up (u), '
         'Turn rotor down (d), '
-        'Set rotor position (s)'
+        'Set rotor position (s), '
         'Get settings (g), '
         'Send message (m)'
         '\n'
+        'Quit (q)'
+        '\n'
         'Desired user action: '
     )
-    print('To quit, type "quit" when prompted for an action.')
-    while action != 'quit':
+    while action != 'q':
         action = input(action_prompt)
-        match action: # a, k, r, u, d, s, g, m, quit
+        match action: # a, k, r, u, d, s, g, m, q
             case 'a': # Add pair to plugboard
                 c1 = input('Char 1: ').upper()
                 c2 = input('Char 2: ').upper()
@@ -257,7 +258,7 @@ def main():
                     enigma_machine.turn_rotor_bwd(rotor_id)
             case 's': # Set rotor position
                 rotor_id = input('Current rotor (slow, midl, fast): ')
-                rotor_pos = int(input('Set rotor position to '))
+                rotor_pos = int(input('Set rotor position to ')) %26
                 id_to_index = {'slow':0, 'midl':1, 'fast':2}
                 while rotor_pos != enigma_machine.get_settings()[id_to_index[rotor_id]][1]:
                     enigma_machine.turn_rotor_fwd(rotor_id)
