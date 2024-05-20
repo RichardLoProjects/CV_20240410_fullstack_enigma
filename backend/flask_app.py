@@ -42,6 +42,11 @@ def handle_request():
             assert data['rotor'] in rotor_set
             enigma_machine.turn_rotor_bwd(data['rotor'])
             return jsonify({'status':'success'})
+        case 'g':
+            return jsonify({
+                'status':'success',
+                'settings':enigma_machine.get_settings()
+            })
         case 'm':
             return jsonify({
                 'status':'success',
