@@ -9,14 +9,107 @@
 <body>
     <div class="container">
         <h1>Enigma Machine</h1>
-        <div class="title_body"> <!-- ROTORS -->
-            <h3>Rotors</h3>
-            <div class="rotors">
-                <div class="rotor">
-                    <div class="rotorLabel">
-                        <label for="rotor1">Slow</label>
-                        <select id="rotor1">
-                            <!-- Options for rotor settings -->
+        <div class="icontainer_outer">
+            <div class="icontainer_inner">
+                <h3>Rotors</h3>
+                <div class="rotors"> <!-- Rotors -->
+                    <div class="rotor">
+                        <div class="rotorLabel">
+                            <label>Slow</label>
+                            <select id="rotor1box">
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                            </select>
+                        </div>
+                        <button id="rotor1up">↑</button>
+                        <div id="rotor1pos" class="rotorPos">&#8205;</div>
+                        <button id="rotor1down">↓</button>
+                    </div>
+                    <div class="rotor">
+                        <div class="rotorLabel">
+                            <label>Mid</label>
+                            <select id="rotor2box">
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                            </select>
+                        </div>
+                        <button id="rotor2up">↑</button>
+                        <div id="rotor2pos" class="rotorPos">&#8205;</div>
+                        <button id="rotor2down">↓</button>
+                    </div>
+                    <div class="rotor">
+                        <div class="rotorLabel">
+                            <label>Fast</label>
+                            <select id="rotor3box">
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                            </select>
+                        </div>
+                        <button id="rotor3up">↑</button>
+                        <div id="rotor3pos" class="rotorPos">&#8205;</div>
+                        <button id="rotor3down">↓</button>
+                    </div>
+                </div>
+                <h3>
+                    <pre id="lamp">Lamp: </pre>
+                </h3>
+                <h3>Keyboard</h3>
+                <div class="keyboard"> <!-- QWERTY Keyboard -->
+                    <div class="row">
+                        <button id="Q">Q</button>
+                        <button id="W">W</button>
+                        <button id="E">E</button>
+                        <button id="R">R</button>
+                        <button id="T">T</button>
+                        <button id="Y">Y</button>
+                        <button id="U">U</button>
+                        <button id="I">I</button>
+                        <button id="O">O</button>
+                        <button id="P">P</button>
+                    </div>
+                    <div class="row">
+                        <button id="A">A</button>
+                        <button id="S">S</button>
+                        <button id="D">D</button>
+                        <button id="F">F</button>
+                        <button id="G">G</button>
+                        <button id="H">H</button>
+                        <button id="J">J</button>
+                        <button id="K">K</button>
+                        <button id="L">L</button>
+                    </div>
+                    <div class="row">
+                        <button id="Z">Z</button>
+                        <button id="X">X</button>
+                        <button id="C">C</button>
+                        <button id="V">V</button>
+                        <button id="B">B</button>
+                        <button id="N">N</button>
+                        <button id="M">M</button>
+                    </div>
+                </div>
+            </div>
+            <div class="icontainer_inner">
+                <h3>Plugboard</h3>
+                <div class="plugboard"> <!-- Plugboard -->
+                    <div class="plug">
+                        <select id="plug1a">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
+                        <select id="plug1b">
                             <option value="1">1</option>
                             <option value="2">2</option>
                             <option value="3">3</option>
@@ -24,15 +117,15 @@
                             <option value="5">5</option>
                         </select>
                     </div>
-                    <button id="rotor1">↑</button>
-                    <label for="rotor1" class="rotorPos">1</label>
-                    <button id="rotor1">↓</button>
-                </div>
-                <div class="rotor">
-                    <div class="rotorLabel">
-                        <label for="rotor2">Mid</label>
-                        <select id="rotor2">
-                            <!-- Options for rotor settings -->
+                    <div class="plug">
+                        <select id="plug2a">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
+                        <select id="plug2b">
                             <option value="1">1</option>
                             <option value="2">2</option>
                             <option value="3">3</option>
@@ -40,15 +133,15 @@
                             <option value="5">5</option>
                         </select>
                     </div>
-                    <button id="rotor2">↑</button>
-                    <label for="rotor2" class="rotorPos">1</label>
-                    <button id="rotor2">↓</button>
-                </div>
-                <div class="rotor">
-                    <div class="rotorLabel">
-                        <label for="rotor3">Fast</label>
-                        <select id="rotor3">
-                            <!-- Options for rotor settings -->
+                    <div class="plug">
+                        <select id="plug3a">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
+                        <select id="plug3b">
                             <option value="1">1</option>
                             <option value="2">2</option>
                             <option value="3">3</option>
@@ -56,104 +149,168 @@
                             <option value="5">5</option>
                         </select>
                     </div>
-                    <button id="rotor3">↑</button>
-                    <label for="rotor3" class="rotorPos">1</label>
-                    <button id="rotor3">↓</button>
+                    <div class="plug">
+                        <select id="plug4a">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
+                        <select id="plug4b">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
+                    </div>
+                    <div class="plug">
+                        <select id="plug5a">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
+                        <select id="plug5b">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
+                    </div>
+                    <div class="plug">
+                        <select id="plug6a">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
+                        <select id="plug6b">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
+                    </div>
+                    <div class="plug">
+                        <select id="plug7a">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
+                        <select id="plug7b">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
+                    </div>
+                    <div class="plug">
+                        <select id="plug8a">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
+                        <select id="plug8b">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
+                    </div>
+                    <div class="plug">
+                        <select id="plug9a">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
+                        <select id="plug9b">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
+                    </div>
+                    <div class="plug">
+                        <select id="plug10a">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
+                        <select id="plug10b">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
+                    </div>
+                    <div class="plug">
+                        <select id="plug11a">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
+                        <select id="plug11b">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
+                    </div>
+                    <div class="plug">
+                        <select id="plug12a">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
+                        <select id="plug12b">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
+                    </div>
+                    <div class="plug">
+                        <select id="plug13a">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
+                        <select id="plug13b">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
+                    </div>
                 </div>
             </div>
-        </div>
-        <h3>Keyboard</h3>
-        <div class="keyboard"> <!-- <h2>QWERTY Keyboard</h2> -->
-            <div class="row">
-                <button>Q</button>
-                <button>W</button>
-                <button>E</button>
-                <button>R</button>
-                <button>T</button>
-                <button>Y</button>
-                <button>U</button>
-                <button>I</button>
-                <button>O</button>
-                <button>P</button>
-            </div>
-            <div class="row">
-                <button>A</button>
-                <button>S</button>
-                <button>D</button>
-                <button>F</button>
-                <button>G</button>
-                <button>H</button>
-                <button>J</button>
-                <button>K</button>
-                <button>L</button>
-            </div>
-            <div class="row">
-                <button>Z</button>
-                <button>X</button>
-                <button>C</button>
-                <button>V</button>
-                <button>B</button>
-                <button>N</button>
-                <button>M</button>
-            </div>
-        </div>
-        <h3>Plugboard</h3>
-        <div class="plugboard"> <!-- <h2>Plugboard</h2> -->
-            <div class="plug">
-                <input type="text" id="plug1a" maxlength="1">
-                <input type="text" id="plug1b" maxlength="1">
-            </div>
-            <div class="plug">
-                <input type="text" id="plug2a" maxlength="1">
-                <input type="text" id="plug2b" maxlength="1">
-            </div>
-            <div class="plug">
-                <input type="text" id="plug3a" maxlength="1">
-                <input type="text" id="plug3b" maxlength="1">
-            </div>
-            <div class="plug">
-                <input type="text" id="plug4a" maxlength="1">
-                <input type="text" id="plug4b" maxlength="1">
-            </div>
-            <div class="plug">
-                <input type="text" id="plug5a" maxlength="1">
-                <input type="text" id="plug5b" maxlength="1">
-            </div>
-            <div class="plug">
-                <input type="text" id="plug6a" maxlength="1">
-                <input type="text" id="plug6b" maxlength="1">
-            </div>
-            <div class="plug">
-                <input type="text" id="plug7a" maxlength="1">
-                <input type="text" id="plug7b" maxlength="1">
-            </div>
-            <div class="plug">
-                <input type="text" id="plug8a" maxlength="1">
-                <input type="text" id="plug8b" maxlength="1">
-            </div>
-            <div class="plug">
-                <input type="text" id="plug9a" maxlength="1">
-                <input type="text" id="plug9b" maxlength="1">
-            </div>
-            <div class="plug">
-                <input type="text" id="plug10a" maxlength="1">
-                <input type="text" id="plug10b" maxlength="1">
-            </div>
-            <div class="plug">
-                <input type="text" id="plug11a" maxlength="1">
-                <input type="text" id="plug11b" maxlength="1">
-            </div>
-            <div class="plug">
-                <input type="text" id="plug12a" maxlength="1">
-                <input type="text" id="plug12b" maxlength="1">
-            </div>
-            <div class="plug">
-                <input type="text" id="plug13a" maxlength="1">
-                <input type="text" id="plug13b" maxlength="1">
-            </div>
-        </div>
-        <div>
-            <pre id="output"></pre>
         </div>
     </div>
     <script src="{{ url_for('static', filename='script.js') }}"></script>
