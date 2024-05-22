@@ -105,6 +105,8 @@ document.addEventListener('DOMContentLoaded', function(){
     }
     function populatePlugboard (){
         for (let i=1; i<=maxPlugboardPairs; i++){
+            // Uncaught TypeError: Cannot read properties of null (reading 'select.appendChild')
+            // caused when i=0
             populatePlug(`plug${i}a`);
             populatePlug(`plug${i}b`);
         }
