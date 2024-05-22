@@ -118,7 +118,10 @@ class Plugboard:
     def reset(self) -> None:
         for c in self._connections.copy():
             self.detach_pair(c)
-    def get_settings(self) -> set:
+    def get_settings(self) -> list:
+        return [(k,v) for k,v in self._wiring.items() if (k < v)]
+    def get_settings_set(self) -> set:
+        # Function discarded because sets are not compatible with json
         return {(k,v) for k,v in self._wiring.items() if (k < v)}
     def copy(self):
         copied_plugboard:Plugboard = Plugboard()
@@ -183,6 +186,9 @@ class EnigmaMachine:
             self._rotors['fast'].copy(),
             self._plugboard.copy()
         )
+    def reset(self) -> None:
+        self._plugboard:Plugboard = Plugboard()
+        self._rotors:dict[str,Rotor] = {'slow':Rotor(3), 'midl':Rotor(2), 'fast':Rotor(1)}
     @classmethod
     def default(cls):
         return EnigmaMachine(Rotor(3), Rotor(2), Rotor(1), Plugboard())

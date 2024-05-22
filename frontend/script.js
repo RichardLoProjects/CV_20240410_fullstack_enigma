@@ -38,10 +38,44 @@ how to code lamp output
 
 */
 
+
+const navigationType = window.performance.navigation.type;
+if (navigationType === window.performance.navigation.TYPE_RELOAD) {
+    console.log("Page was reloaded!");
+    fetch('handle_requests', {
+        'method':'POST',
+        'body':JSON.stringify({'action':'refresh', 'data':'dummyData'}),
+        'headers':{'Content-Type':'application/json'}
+    });
+}
 document.addEventListener('DOMContentLoaded', function(){
     // Handle requests
     function sendRequest(action, data){
+        let currentChar = '';
         console.log(`action:${action}, data:${data}, char:${data['char']}, pair:${data['pair']}, rotor:${data['rotor']}`);
+        // fetch = (JS -> flask)
+        fetch('/handle_requests', {
+            'method':'POST',
+            'body':JSON.stringify({'action':action, 'data':data}),
+            'headers':{'Content-Type':'application/json'}
+        })
+        // (flask -> JS)
+        .then(response => response.json())
+        // process what was received from flask
+        .then(data => {
+            console.log(data)
+            if ('encrypted_char' in data){
+                currentChar = data['encrypted_char'];
+                document.getElementById('lamp').textContent = 'Lamp: ' + currentChar;
+            }
+            for (let i=0; i<3; i++){
+                document.getElementById(`rotor${i+1}pos`).textContent = data['config'][i][1];
+            }
+        })
+        .catch(error => {
+            console.error(error);
+        });
+        //
     }
     // End requests
 
@@ -49,13 +83,9 @@ document.addEventListener('DOMContentLoaded', function(){
     const rotorLabel = ['slow', 'midl', 'fast']
     for (let i=1; i<=3; i++){
         document.getElementById(`rotor${i}box`).addEventListener('change', function(){
-            sendRequest(
-                'r',
-                {
-                    'rotor':rotorLabel[i-1],
-                    'new_rotor':document.getElementById(`rotor${i}box`).value
-                }
-            );
+            const rotor = rotorLabel[i-1];
+            const new_rotor = document.getElementById(`rotor${i}box`).value
+            sendRequest('r', {'rotor':rotor, 'new_rotor':new_rotor});
         });
         document.getElementById(`rotor${i}up`).addEventListener('click', function(){
             sendRequest('u', {'rotor':rotorLabel[i-1]});
