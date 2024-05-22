@@ -11,6 +11,7 @@ valid_actions:set = {'a','k','r','u','d','m'}
 rotor_set:set = {'slow','midl','fast'}
 box_of_rotor_ids:set = {1,2,3,4,5}
 
+## At least 2 routes needed to: return html for rendering, and handle JS requests
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -22,11 +23,11 @@ def handle_request():
     assert action in valid_actions
     match action:
         case 'a':
-            # Expecting len 2 tuple of uppercase char A-Z
+            # Expecting len-2 tuple of uppercase char A-Z
             enigma_machine.attach_plugs(*data['pair'])
             return jsonify({'status':'success'})
         case 'k':
-            # Expecting uppercase char A-Z
+            # Expecting len-1 uppercase char A-Z
             enigma_machine.detach_plugs(data['char'])
             return jsonify({'status':'success'})
         case 'r':
@@ -48,6 +49,7 @@ def handle_request():
                 'settings':enigma_machine.get_settings()
             })
         case 'm':
+            # Expecting len-1 uppercase char A-Z
             return jsonify({
                 'status':'success',
                 'encrypted_char':enigma_machine.map(data['char'])
