@@ -40,6 +40,7 @@ how to code lamp output
 
 
 const navigationType = window.performance.navigation.type;
+let history = '';
 if (navigationType === window.performance.navigation.TYPE_RELOAD) {
     console.log("Page was reloaded!");
     fetch('handle_requests', {
@@ -66,7 +67,8 @@ document.addEventListener('DOMContentLoaded', function(){
             console.log(data)
             if ('encrypted_char' in data){
                 currentChar = data['encrypted_char'];
-                document.getElementById('lamp').textContent = 'Lamp: ' + currentChar;
+                history += currentChar;
+                document.getElementById('lamp').textContent = 'Lamp: ' + history;
             }
             for (let i=0; i<3; i++){
                 document.getElementById(`rotor${i+1}pos`).textContent = data['config'][i][1];
@@ -102,9 +104,16 @@ document.addEventListener('DOMContentLoaded', function(){
     // Keyboard
     const keyboard = document.querySelectorAll('.keyboard button');
     keyboard.forEach(button => {
-        button.addEventListener('click', function(){
-            sendRequest('m', {'char':button.id});
-        });
+        if (button.textContent != document.getElementById('clear').textContent){
+            button.addEventListener('click', function(){
+                sendRequest('m', {'char':button.id});
+            });
+        } else {
+            button.addEventListener('click', function(){
+                history = '';
+                document.getElementById('lamp').textContent = 'Lamp: ' + history;
+            })
+        }
     });
     // End keyboard
 
